@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flux Studio - Create Project</title>
+    
+    <style>
+        :root {
+            --bg-dark: #1e1e1e;
+            --bg-panel: #252526;
+            --bg-dot: #3e3e42;
+            --border-color: #3e3e42;
+            --text-main: #cccccc;
+            --accent-blue: #007acc;
+            --accent-purple: #8b5cf6;
+            --gradient-main: linear-gradient(135deg, #007acc, #8b5cf6);
+            --success-green: #27c93f;
+            --warning-yellow: #ffbd2e;
+            --danger-red: #e81123;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            background-color: #111;
+            color: var(--text-main);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+        }
+
+        .app-window {
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-dark);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* --- TOP BAR --- */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(90deg, #1e1e1e, #2d2d2d);
+            padding: 0 15px;
+            height: 36px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 13px;
+            flex-shrink: 0;
+            z-index: 10;
+        }
+        .top-left { 
+            display: flex; 
+            align-items: center;
+            flex: 1;
+            gap: 15px;
+        }
+        .brand { 
+            font-weight: 700; 
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            flex-shrink: 0;
+            font-size: 15px;
+            cursor: pointer;
+        }
+        .brand:hover {
+            opacity: 0.8;
+        }
+        .menu-item { 
+            cursor: pointer; 
+            flex-shrink: 0;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: all 0.2s;
+            font-size: 12px;
+            color: #969696;
+            position: relative;
+        }
+        .menu-item:hover { 
+            color: #fff; 
+            background: #2a2d2e;
+        }
+        .menu-item.active {
+            color: #fff;
+            background: #2a2d2e;
+        }
+        .menu-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 20%;
+            width: 60%;
+            height: 2px;
+            background: var(--gradient-main);
+            border-radius: 2px;
+        }
+
+        .search-bar {
+            background: #3c3c3c;
+            border: 1px solid transparent;
+            border-radius: 6px;
+            padding: 2px 12px;
+            height: 26px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #969696;
+            font-size: 12px;
+            flex: 1;
+            min-width: 100px;
+            max-width: 400px;
+            cursor: text;
+            transition: all 0.3s;
+        }
+        .search-bar:hover { border-color: #555; background: #3a3a3a; }
+        .search-bar:focus-within { 
+            border-color: var(--accent-blue); 
+            background: #252526; 
+            color: #fff;
+            box-shadow: 0 0 20px rgba(0, 122, 204, 0.1);
+        }
+        .search-bar input {
+            background: transparent;
+            border: none;
+            outline: none;
+            color: #fff;
+            width: 100%;
+            font-size: 12px;
+            font-family: inherit;
+        }
+        .search-bar input::placeholder { color: #888; }
+        .search-shortcut {
+            font-size: 10px;
+            color: #555;
+            background: #2a2d2e;
+            padding: 1px 6px;
+            border-radius: 3px;
+            border: 1px solid #3e3e42;
+        }
+
+        .top-right { 
+            display: flex; 
+            gap: 12px; 
+            align-items: center; 
+            font-size: 14px; 
+            flex-shrink: 0;
+            color: #969696;
+        }
+        .top-right .icon-btn {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .top-right .icon-btn:hover {
+            background: #2a2d2e;
+            color: #fff;
+        }
+        .window-controls {
+            display: flex;
+            gap: 5px;
+            margin-left: 10px;
+        }
+        .window-controls span {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            cursor: pointer;
+        }
+        .window-controls .red { background: #ff5f56; }
+        .window-controls .yellow { background: #ffbd2e; }
+        .window-controls .green { background: #27c93f; }
+
+        /* --- PROGRESS BAR --- */
+        .progress-bar {
+            height: 20px;
+            background: #2d2d2d;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            color: #555;
+            flex-shrink: 0;
+            text-transform: uppercase;
+            position: relative;
+            overflow: hidden;
+        }
+        .progress-bar .progress-fill {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 0%;
+            background: var(--gradient-main);
+            opacity: 0.15;
+            transition: width 1s;
+        }
+        .progress-bar .progress-label {
+            position: relative;
+            z-index: 1;
+            background: rgba(45, 45, 45, 0.7);
+            padding: 0 15px;
+            border-radius: 10px;
+        }
+
+        /* --- MAIN CONTENT --- */
+        .main-content {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 40px 20px;
+            background: radial-gradient(circle at 50% 50%, #1a1a1a, #0a0a0a);
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .main-content::-webkit-scrollbar {
+            width: 8px;
+        }
+        .main-content::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .main-content::-webkit-scrollbar-thumb {
+            background: #3e3e42;
+            border-radius: 4px;
+        }
+        .main-content::-webkit-scrollbar-thumb:hover {
+            background: #4e4e52;
+        }
+
+        .project-creation-container {
+            width: 100%;
+            max-width: 800px;
+            background: var(--bg-panel);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            margin: auto;
+        }
+
+        .creation-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 32px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .creation-header .icon {
+            font-size: 32px;
+            width: 60px;
+            height: 60px;
+            background: var(--gradient-main);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .creation-header .title {
+            font-size: 24px;
+            font-weight: 300;
+            color: #fff;
+        }
+
+        .creation-header .subtitle {
+            font-size: 13px;
+            color: #969696;
+            margin-top: 4px;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            text-transform: uppercase;
+            color: #969696;
+            margin-bottom: 6px;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group label .required {
+            color: #e81123;
+            margin-left: 4px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            background: #1e1e1e;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 10px 14px;
+            color: #fff;
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.3s;
+            outline: none;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 20px rgba(0, 122, 204, 0.1);
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: #555;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+            max-height: 200px;
+        }
+
+        .form-group select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23969696' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            padding-right: 40px;
+        }
+
+        .form-group select option {
+            background: #1e1e1e;
+            color: #fff;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .template-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .template-card {
+            background: #1e1e1e;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            position: relative;
+        }
+
+        .template-card:hover {
+            border-color: #4a4a4a;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        .template-card.selected {
+            border-color: var(--accent-blue);
+            background: #1a2a3a;
+            box-shadow: 0 0 30px rgba(0, 122, 204, 0.15);
+        }
+
+        .template-card .emoji {
+            font-size: 32px;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .template-card .name {
+            font-size: 13px;
+            color: #fff;
+            font-weight: 500;
+        }
+
+        .template-card .desc {
+            font-size: 11px;
+            color: #969696;
+            margin-top: 4px;
+        }
+
+        .template-card .check {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            color: var(--accent-blue);
+            font-size: 18px;
+            display: none;
+        }
+
+        .template-card.selected .check {
+            display: block;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 32px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+            justify-content: flex-end;
+        }
+
+        .btn {
+            padding: 10px 28px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: #969696;
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: #2a2d2e;
+            color: #fff;
+        }
+
+        .btn-primary {
+            background: var(--gradient-main);
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0, 122, 204, 0.3);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .creation-progress {
+            margin-top: 20px;
+            padding: 16px;
+            background: #1e1e1e;
+            border-radius: 6px;
+            display: none;
+        }
+
+        .creation-progress.active {
+            display: block;
+        }
+
+        .progress-bar-creation {
+            height: 4px;
+            background: var(--border-color);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+
+        .progress-bar-creation .fill {
+            height: 100%;
+            width: 0%;
+            background: var(--gradient-main);
+            border-radius: 2px;
+            transition: width 0.5s;
+        }
+
+        .progress-status {
+            font-size: 13px;
+            color: #969696;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .progress-status .spinner {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #2d2d2d;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px 24px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+            max-width: 400px;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast .toast-title {
+            font-weight: 600;
+            color: #fff;
+            font-size: 14px;
+        }
+
+        .toast .toast-message {
+            font-size: 13px;
+            color: #969696;
+            margin-top: 4px;
+        }
+
+        .toast.success { border-color: var(--success-green); }
+        .toast.error { border-color: var(--danger-red); }
+        .toast.warning { border-color: var(--warning-yellow); }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #3e3e42;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4e4e52;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 20px 10px;
+                align-items: flex-start;
+            }
+
+            .project-creation-container {
+                padding: 20px;
+                margin: 10px 0;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .template-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .creation-header .title {
+                font-size: 20px;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .form-actions .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .creation-header .icon {
+                width: 48px;
+                height: 48px;
+                font-size: 24px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .template-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .top-left .menu-item {
+                display: none;
+            }
+
+            .project-creation-container {
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-window">
+    <!-- TOP BAR -->
+    <div class="top-bar">
+        <div class="top-left">
+            <div class="brand" onclick="window.location.href='/'">✦ Flux Studio</div>
+            <div class="menu-item" onclick="window.location.href='/'">Home</div>
+            <div class="menu-item active" onclick="window.location.href='/create'">New Project</div>
+            <div class="menu-item" onclick="window.location.href='/load'">Load Project</div>
+            <div class="menu-item" onclick="window.location.href='/editor'">Editor</div>
+            <div class="menu-item" onclick="window.location.href='/admin'">Admin</div>
+            
+            <div class="search-bar">
+                <span>🔍</span>
+                <input type="text" placeholder="Global Search..." id="globalSearch">
+                <span class="search-shortcut">⌘P</span>
+            </div>
+
+            <div class="menu-item">Help</div>
+        </div>
+        <div class="top-right">
+            <span class="icon-btn" onclick="window.location.href='/'">🏠</span>
+            <span class="icon-btn" onclick="window.location.href='/admin'">⚙️</span>
+            <div class="window-controls">
+                <span class="red" onclick="window.close()"></span>
+                <span class="yellow"></span>
+                <span class="green"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- PROGRESS BAR -->
+    <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+        <span class="progress-label" id="progressLabel">● Ready</span>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content" id="mainContent">
+        <div class="project-creation-container">
+            <!-- Header -->
+            <div class="creation-header">
+                <div class="icon">✦</div>
+                <div>
+                    <div class="title">Create New Project</div>
+                    <div class="subtitle">Set up your project to start building amazing interfaces</div>
+                </div>
+            </div>
+
+            <!-- Form -->
+            <form id="projectForm" onsubmit="return false;">
+                <!-- Project Name -->
+                <div class="form-group">
+                    <label>Project Name <span class="required">*</span></label>
+                    <input 
+                        type="text" 
+                        id="projectName" 
+                        placeholder="My Awesome Project" 
+                        required
+                        autofocus
+                    >
+                </div>
+
+                <!-- Description -->
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea 
+                        id="projectDescription" 
+                        placeholder="What is this project about?"
+                        rows="3"
+                    ></textarea>
+                </div>
+
+                <!-- Template Selection -->
+                <div class="form-group">
+                    <label>Select Template</label>
+                    <div class="template-grid" id="templateGrid">
+                        <!-- Загружается через JS -->
+                        <div style="grid-column:1/-1;text-align:center;color:#555;padding:20px;">
+                            ⏳ Loading templates...
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Row: Project Type + Framework -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Project Type</label>
+                        <select id="projectType">
+                            <option value="web">Web Application</option>
+                            <option value="mobile">Mobile App</option>
+                            <option value="desktop">Desktop App</option>
+                            <option value="library">Library / Component</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Framework</label>
+                        <select id="projectFramework">
+                            <option value="vanilla">Vanilla JS</option>
+                            <option value="react">React</option>
+                            <option value="vue">Vue.js</option>
+                            <option value="angular">Angular</option>
+                            <option value="svelte">Svelte</option>
+                            <option value="fabric">Fabric.js (Canvas)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Row: Color Scheme + Font -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Color Scheme</label>
+                        <select id="colorScheme">
+                            <option value="dark">Dark (Default)</option>
+                            <option value="light">Light</option>
+                            <option value="blue">Blue Ocean</option>
+                            <option value="purple">Purple Haze</option>
+                            <option value="green">Green Forest</option>
+                            <option value="sunset">Sunset</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Font Family</label>
+                        <select id="fontFamily">
+                            <option value="inter">Inter</option>
+                            <option value="system">System Default</option>
+                            <option value="roboto">Roboto</option>
+                            <option value="poppins">Poppins</option>
+                            <option value="mono">Monospace</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="window.location.href='/'">
+                        Cancel
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="resetForm()">
+                        Reset
+                    </button>
+                    <button type="submit" class="btn btn-primary" id="createBtn" onclick="createProject()">
+                        ✦ Create Project
+                    </button>
+                </div>
+
+                <!-- Progress -->
+                <div class="creation-progress" id="creationProgress">
+                    <div class="progress-bar-creation">
+                        <div class="fill" id="progressFillCreation"></div>
+                    </div>
+                    <div class="progress-status">
+                        <span class="spinner">⏳</span>
+                        <span id="progressStatusText">Creating project...</span>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast">
+        <div class="toast-title" id="toastTitle">Success!</div>
+        <div class="toast-message" id="toastMessage">Project created successfully.</div>
+    </div>
+</div>
+
+<script>
+    // ============================================================
+    //  CREATE PROJECT - РАБОЧАЯ ВЕРСИЯ С ШАБЛОНАМИ С СЕРВЕРА
+    // ============================================================
+
+    let TEMPLATES = [];
+
+    // --- Загрузка шаблонов с сервера ---
+    async function loadTemplates() {
+        try {
+            const response = await fetch('/api/templates');
+            const data = await response.json();
+            TEMPLATES = data;
+            renderTemplates();
+            console.log('📦 Templates loaded from server:', TEMPLATES.length);
+        } catch (error) {
+            console.error('❌ Failed to load templates:', error);
+            // Fallback - дефолтные шаблоны
+            TEMPLATES = [
+                { id: "blank", name: "Blank", emoji: "📄", desc: "Empty canvas" },
+                { id: "website", name: "Website", emoji: "🌐", desc: "Multi-page website" },
+                { id: "dashboard", name: "Dashboard", emoji: "📊", desc: "Admin dashboard" },
+                { id: "landing", name: "Landing Page", emoji: "🚀", desc: "Marketing landing" },
+                { id: "portfolio", name: "Portfolio", emoji: "🎨", desc: "Creative portfolio" },
+                { id: "ecommerce", name: "E-Commerce", emoji: "🛒", desc: "Online store" }
+            ];
+            renderTemplates();
+        }
+    }
+
+    // --- Рендер шаблонов ---
+    function renderTemplates() {
+        const container = document.getElementById('templateGrid');
+        container.innerHTML = '';
+        
+        TEMPLATES.forEach((template, index) => {
+            const card = document.createElement('div');
+            card.className = `template-card${index === 0 ? ' selected' : ''}`;
+            card.dataset.template = template.id;
+            card.innerHTML = `
+                <span class="emoji">${template.emoji || '📄'}</span>
+                <div class="name">${template.name}</div>
+                <div class="desc">${template.desc || ''}</div>
+                <span class="check">✓</span>
+            `;
+            card.addEventListener('click', function() {
+                document.querySelectorAll('.template-card').forEach(c => c.classList.remove('selected'));
+                this.classList.add('selected');
+            });
+            container.appendChild(card);
+        });
+    }
+
+    // --- Toast ---
+    function showToast(title, message, type = 'success') {
+        const toast = document.getElementById('toast');
+        const toastTitle = document.getElementById('toastTitle');
+        const toastMessage = document.getElementById('toastMessage');
+        
+        toast.className = 'toast ' + type;
+        toastTitle.textContent = title;
+        toastMessage.textContent = message;
+        
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 4000);
+    }
+
+    // --- Reset Form ---
+    function resetForm() {
+        document.getElementById('projectName').value = '';
+        document.getElementById('projectDescription').value = '';
+        document.getElementById('projectType').selectedIndex = 0;
+        document.getElementById('projectFramework').selectedIndex = 0;
+        document.getElementById('colorScheme').selectedIndex = 0;
+        document.getElementById('fontFamily').selectedIndex = 0;
+        
+        document.querySelectorAll('.template-card').forEach(c => c.classList.remove('selected'));
+        document.querySelector('.template-card:first-child')?.classList.add('selected');
+        
+        document.getElementById('creationProgress').classList.remove('active');
+        document.getElementById('progressFillCreation').style.width = '0%';
+        document.getElementById('createBtn').disabled = false;
+        document.getElementById('createBtn').textContent = '✦ Create Project';
+
+        document.getElementById('mainContent').scrollTop = 0;
+        document.getElementById('projectName').focus();
+    }
+
+    // --- Sleep helper ---
+    function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    // --- CREATE PROJECT (реальный запрос на сервер) ---
+    async function createProject() {
+        const name = document.getElementById('projectName').value.trim();
+        const description = document.getElementById('projectDescription').value.trim();
+        const type = document.getElementById('projectType').value;
+        const framework = document.getElementById('projectFramework').value;
+        const colorScheme = document.getElementById('colorScheme').value;
+        const fontFamily = document.getElementById('fontFamily').value;
+        const template = document.querySelector('.template-card.selected')?.dataset.template || 'blank';
+        
+        if (!name) {
+            showToast('Error', 'Please enter a project name.', 'error');
+            document.getElementById('projectName').focus();
+            return;
+        }
+
+        if (name.length < 3) {
+            showToast('Error', 'Project name must be at least 3 characters.', 'error');
+            document.getElementById('projectName').focus();
+            return;
+        }
+
+        const btn = document.getElementById('createBtn');
+        btn.disabled = true;
+        btn.textContent = 'Creating...';
+        
+        const progressContainer = document.getElementById('creationProgress');
+        const progressFill = document.getElementById('progressFillCreation');
+        const progressStatus = document.getElementById('progressStatusText');
+        
+        progressContainer.classList.add('active');
+        progressFill.style.width = '0%';
+        progressStatus.textContent = 'Validating project...';
+
+        const projectData = {
+            name, description, type, framework,
+            colorScheme, fontFamily, template
+        };
+
+        console.log('📦 Creating project:', projectData);
+
+        try {
+            const response = await fetch('/api/projects', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(projectData)
+            });
+
+            const result = await response.json();
+            
+            if (result.success) {
+                progressFill.style.width = '100%';
+                progressStatus.textContent = 'Project ready! 🎉';
+                
+                showToast('✨ Project Created!', `"${name}" created successfully.`, 'success');
+                btn.disabled = false;
+                btn.textContent = '✦ Create Project';
+
+                setTimeout(() => {
+                    window.location.href = `/project/${result.id}`;
+                }, 1500);
+            } else {
+                throw new Error(result.message || 'Failed to create project');
+            }
+
+        } catch (error) {
+            console.error('❌ Failed to create project:', error);
+            showToast('Error', 'Failed to create project. Please try again.', 'error');
+            btn.disabled = false;
+            btn.textContent = '✦ Create Project';
+            progressContainer.classList.remove('active');
+        }
+    }
+
+    // --- Keyboard Shortcuts ---
+    document.getElementById('projectName').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            document.getElementById('projectDescription').focus();
+        }
+    });
+
+    document.getElementById('projectDescription').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            createProject();
+        }
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+            e.preventDefault();
+            createProject();
+        }
+        if (e.key === 'Escape') {
+            if (confirm('Are you sure you want to cancel?')) {
+                window.location.href = '/';
+            }
+        }
+    });
+
+    // --- Progress Bar Animation ---
+    let progress = 0;
+    setInterval(() => {
+        progress = (progress + 1) % 100;
+        document.getElementById('progressFill').style.width = progress + '%';
+        document.getElementById('progressLabel').textContent = progress === 0 ? '● Ready' : `● Processing... ${progress}%`;
+    }, 500);
+
+    // --- Init ---
+    loadTemplates();
+    document.getElementById('projectName').focus();
+
+    console.log('✦ Flux Studio - Project Creation');
+    console.log('📡 Templates loaded from server via /api/templates');
+    console.log('💡 Keyboard shortcuts: Ctrl+Enter - Create, Escape - Cancel');
+</script>
+
+</body>
+</html>

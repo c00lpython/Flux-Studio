@@ -1,0 +1,1403 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flux Studio - Home</title>
+    
+    <style>
+        :root {
+            --bg-dark: #1e1e1e;
+            --bg-panel: #252526;
+            --bg-dot: #3e3e42;
+            --border-color: #3e3e42;
+            --text-main: #cccccc;
+            --accent-blue: #007acc;
+            --accent-purple: #8b5cf6;
+            --gradient-main: linear-gradient(135deg, #007acc, #8b5cf6);
+            --success-green: #27c93f;
+            --warning-yellow: #ffbd2e;
+            --danger-red: #e81123;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            background-color: #111;
+            color: var(--text-main);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+        }
+
+        .app-window {
+            width: 100%;
+            height: 100vh;
+            height: 100dvh;
+            background-color: var(--bg-dark);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* --- TOP BAR --- */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(90deg, #1e1e1e, #2d2d2d);
+            padding: 0 15px;
+            height: 36px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 13px;
+            flex-shrink: 0;
+            z-index: 10;
+            min-height: 36px;
+        }
+        .top-left { 
+            display: flex; 
+            align-items: center;
+            flex: 1;
+            gap: 15px;
+        }
+        .brand { 
+            font-weight: 700; 
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            flex-shrink: 0;
+            font-size: 15px;
+            cursor: pointer;
+        }
+        .brand:hover {
+            opacity: 0.8;
+        }
+        .menu-item { 
+            cursor: pointer; 
+            flex-shrink: 0;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: all 0.2s;
+            font-size: 12px;
+            color: #969696;
+            position: relative;
+        }
+        .menu-item:hover { 
+            color: #fff; 
+            background: #2a2d2e;
+        }
+        .menu-item.active {
+            color: #fff;
+            background: #2a2d2e;
+        }
+        .menu-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 20%;
+            width: 60%;
+            height: 2px;
+            background: var(--gradient-main);
+            border-radius: 2px;
+        }
+
+        .search-bar {
+            background: #3c3c3c;
+            border: 1px solid transparent;
+            border-radius: 6px;
+            padding: 2px 12px;
+            height: 26px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #969696;
+            font-size: 12px;
+            flex: 1;
+            min-width: 100px;
+            max-width: 400px;
+            cursor: text;
+            transition: all 0.3s;
+        }
+        .search-bar:hover { border-color: #555; background: #3a3a3a; }
+        .search-bar:focus-within { 
+            border-color: var(--accent-blue); 
+            background: #252526; 
+            color: #fff;
+            box-shadow: 0 0 20px rgba(0, 122, 204, 0.1);
+        }
+        .search-bar input {
+            background: transparent;
+            border: none;
+            outline: none;
+            color: #fff;
+            width: 100%;
+            font-size: 12px;
+            font-family: inherit;
+        }
+        .search-bar input::placeholder { color: #888; }
+        .search-shortcut {
+            font-size: 10px;
+            color: #555;
+            background: #2a2d2e;
+            padding: 1px 6px;
+            border-radius: 3px;
+            border: 1px solid #3e3e42;
+        }
+
+        .top-right { 
+            display: flex; 
+            gap: 12px; 
+            align-items: center; 
+            font-size: 14px; 
+            flex-shrink: 0;
+            color: #969696;
+        }
+        .top-right .icon-btn {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .top-right .icon-btn:hover {
+            background: #2a2d2e;
+            color: #fff;
+        }
+        .window-controls {
+            display: flex;
+            gap: 5px;
+            margin-left: 10px;
+        }
+        .window-controls span {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            cursor: pointer;
+        }
+        .window-controls .red { background: #ff5f56; }
+        .window-controls .yellow { background: #ffbd2e; }
+        .window-controls .green { background: #27c93f; }
+
+        /* --- PROGRESS BAR --- */
+        .progress-bar {
+            height: 20px;
+            background: #2d2d2d;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            color: #555;
+            flex-shrink: 0;
+            text-transform: uppercase;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+        .progress-bar .progress-fill {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 0%;
+            background: var(--gradient-main);
+            opacity: 0.15;
+            transition: width 0.5s ease;
+        }
+        .progress-bar .progress-label {
+            position: relative;
+            z-index: 1;
+            background: rgba(45, 45, 45, 0.7);
+            padding: 0 15px;
+            border-radius: 10px;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .progress-bar .progress-spinner {
+            display: none;
+            width: 12px;
+            height: 12px;
+            border: 2px solid #555;
+            border-top-color: var(--accent-blue);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        .progress-bar.loading .progress-spinner {
+            display: inline-block;
+        }
+        .progress-bar .progress-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 4px;
+        }
+        .progress-bar .progress-dot.idle { background: #555; }
+        .progress-bar .progress-dot.loading { background: var(--warning-yellow); animation: pulse 1s ease-in-out infinite; }
+        .progress-bar .progress-dot.success { background: var(--success-green); }
+        .progress-bar .progress-dot.error { background: var(--danger-red); }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* --- MAIN CONTENT --- */
+        .main-content {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+            min-height: 0;
+        }
+
+        /* --- LEFT: Update Log --- */
+        .update-log {
+            width: 280px;
+            min-width: 220px;
+            max-width: 320px;
+            background: var(--bg-panel);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            overflow: hidden;
+            height: 100%;
+        }
+
+        .update-log-header {
+            padding: 10px 16px 8px;
+            border-bottom: 1px solid var(--border-color);
+            flex-shrink: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            min-height: 36px;
+        }
+
+        .update-log-header .title {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: #969696;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .update-log-header .title .version {
+            font-size: 9px;
+            color: #555;
+            font-weight: 400;
+            text-transform: none;
+        }
+
+        .update-log-header .actions {
+            display: flex;
+            gap: 6px;
+            font-size: 14px;
+            color: #969696;
+            cursor: pointer;
+        }
+
+        .update-log-header .actions span:hover {
+            color: #fff;
+        }
+
+        .update-log-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 4px 0;
+            min-height: 0;
+        }
+
+        .update-log-list::-webkit-scrollbar {
+            width: 6px;
+        }
+        .update-log-list::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .update-log-list::-webkit-scrollbar-thumb {
+            background: #3e3e42;
+            border-radius: 3px;
+        }
+        .update-log-list::-webkit-scrollbar-thumb:hover {
+            background: #4e4e52;
+        }
+
+        .update-item {
+            padding: 8px 16px 8px 20px;
+            cursor: pointer;
+            transition: all 0.15s;
+            border-left: 2px solid transparent;
+            position: relative;
+        }
+
+        .update-item:hover {
+            background: #2a2d2e;
+            border-left-color: var(--accent-blue);
+        }
+
+        .update-item::before {
+            content: '';
+            position: absolute;
+            left: 4px;
+            top: 12px;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--accent-blue);
+        }
+
+        .update-item.feature::before { 
+            background: var(--success-green);
+            box-shadow: 0 0 8px rgba(39, 201, 63, 0.3);
+        }
+        .update-item.fix::before { 
+            background: var(--warning-yellow);
+            box-shadow: 0 0 8px rgba(255, 189, 46, 0.3);
+        }
+        .update-item.breaking::before { 
+            background: var(--danger-red);
+            box-shadow: 0 0 8px rgba(232, 17, 35, 0.3);
+        }
+        .update-item.update::before { 
+            background: var(--accent-purple);
+            box-shadow: 0 0 8px rgba(139, 92, 246, 0.3);
+        }
+
+        .update-item .update-date {
+            font-size: 9px;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .update-item .update-title {
+            font-size: 13px;
+            color: #fff;
+            font-weight: 500;
+            margin: 2px 0 2px;
+        }
+
+        .update-item .update-desc {
+            font-size: 12px;
+            color: #969696;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .update-item .update-tag {
+            display: inline-block;
+            font-size: 8px;
+            padding: 1px 8px;
+            border-radius: 10px;
+            margin-top: 3px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .update-item .update-tag.feature { 
+            background: rgba(39, 201, 63, 0.15); 
+            color: var(--success-green); 
+        }
+        .update-item .update-tag.fix { 
+            background: rgba(255, 189, 46, 0.15); 
+            color: var(--warning-yellow); 
+        }
+        .update-item .update-tag.breaking { 
+            background: rgba(232, 17, 35, 0.15); 
+            color: var(--danger-red); 
+        }
+        .update-item .update-tag.update { 
+            background: rgba(139, 92, 246, 0.15); 
+            color: var(--accent-purple); 
+        }
+
+        /* --- RIGHT: Main Actions --- */
+        .main-actions {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 40px 48px;
+            overflow-y: auto;
+            background: radial-gradient(circle at 50% 50%, #1a1a1a, #0a0a0a);
+            min-height: 0;
+        }
+
+        .main-actions::-webkit-scrollbar {
+            width: 6px;
+        }
+        .main-actions::-webkit-scrollbar-thumb {
+            background: #3e3e42;
+            border-radius: 3px;
+        }
+
+        .welcome-section {
+            margin-bottom: 32px;
+            flex-shrink: 0;
+        }
+
+        .welcome-section .greeting {
+            font-size: 28px;
+            font-weight: 300;
+            color: #fff;
+        }
+
+        .welcome-section .greeting span {
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .welcome-section .sub {
+            font-size: 14px;
+            color: #969696;
+            margin-top: 4px;
+        }
+
+        /* Action Buttons */
+        .action-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 32px;
+            flex-shrink: 0;
+        }
+
+        .action-card {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .action-card:hover {
+            border-color: var(--accent-blue);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .action-card .icon {
+            font-size: 36px;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .action-card .action-title {
+            font-size: 16px;
+            color: #fff;
+            font-weight: 500;
+        }
+
+        .action-card .action-desc {
+            font-size: 13px;
+            color: #969696;
+            margin-top: 4px;
+        }
+
+        .action-card .action-shortcut {
+            font-size: 10px;
+            color: #555;
+            margin-top: 8px;
+            padding: 2px 12px;
+            background: #1e1e1e;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        /* Recent Projects */
+        .recent-projects-section {
+            flex: 1;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .recent-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            flex-shrink: 0;
+        }
+
+        .recent-header .title {
+            font-size: 16px;
+            color: #fff;
+            font-weight: 500;
+        }
+
+        .recent-header .see-all {
+            font-size: 12px;
+            color: var(--accent-blue);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .recent-header .see-all:hover {
+            color: #fff;
+        }
+
+        .recent-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex: 1;
+            overflow-y: auto;
+            min-height: 0;
+        }
+
+        .recent-list::-webkit-scrollbar {
+            width: 4px;
+        }
+        .recent-list::-webkit-scrollbar-thumb {
+            background: #3e3e42;
+            border-radius: 2px;
+        }
+
+        .recent-item {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 14px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .recent-item:hover {
+            border-color: #4a4a4a;
+            background: #2a2d2e;
+            transform: translateX(4px);
+        }
+
+        .recent-item .project-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 0;
+        }
+
+        .recent-item .project-info .emoji {
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .recent-item .project-info .name {
+            font-size: 14px;
+            color: #fff;
+            font-weight: 500;
+        }
+
+        .recent-item .project-info .meta {
+            font-size: 12px;
+            color: #969696;
+            display: flex;
+            gap: 12px;
+            margin-top: 2px;
+            flex-wrap: wrap;
+        }
+
+        .recent-item .project-time {
+            font-size: 12px;
+            color: #555;
+            flex-shrink: 0;
+        }
+
+        /* Empty state */
+        .empty-recent {
+            text-align: center;
+            padding: 40px 20px;
+            color: #969696;
+        }
+
+        .empty-recent .emoji {
+            font-size: 40px;
+            display: block;
+            margin-bottom: 12px;
+        }
+
+        .empty-recent .title {
+            font-size: 16px;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+
+        .empty-recent .desc {
+            font-size: 13px;
+            color: #555;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #2d2d2d;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px 24px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+            max-width: 400px;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast .toast-title {
+            font-weight: 600;
+            color: #fff;
+            font-size: 14px;
+        }
+
+        .toast .toast-message {
+            font-size: 13px;
+            color: #969696;
+            margin-top: 4px;
+        }
+
+        .toast.success { border-color: var(--success-green); }
+        .toast.error { border-color: var(--danger-red); }
+        .toast.warning { border-color: var(--warning-yellow); }
+
+        /* --- USER MENU --- */
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .username {
+            font-size: 13px;
+            color: #fff;
+            font-weight: 500;
+        }
+
+        .avatar-btn {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: #2a2d2e;
+            padding: 4px 10px 4px 8px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .avatar-btn:hover {
+            background: #3a3d3e;
+            border-color: var(--accent-blue);
+        }
+
+        .avatar-icon {
+            font-size: 16px;
+        }
+
+        .dropdown-arrow {
+            font-size: 10px;
+            color: #969696;
+            transition: transform 0.3s;
+        }
+
+        .dropdown-arrow.open {
+            transform: rotate(180deg);
+        }
+
+        /* --- DROPDOWN --- */
+        .dropdown-menu {
+            position: absolute;
+            top: 40px;
+            right: 0;
+            background: var(--bg-panel);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            min-width: 200px;
+            padding: 6px 0;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+        }
+
+        .dropdown-menu.open {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 16px;
+            color: #969696;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .dropdown-item:hover {
+            background: #2a2d2e;
+            color: #fff;
+        }
+
+        .dropdown-item .icon {
+            font-size: 16px;
+            width: 24px;
+            text-align: center;
+        }
+
+        .dropdown-item .badge {
+            margin-left: auto;
+            background: var(--accent-blue);
+            color: #fff;
+            font-size: 10px;
+            padding: 1px 8px;
+            border-radius: 10px;
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: var(--border-color);
+            margin: 4px 12px;
+        }
+
+        .dropdown-item.logout {
+            color: #e81123;
+        }
+
+        .dropdown-item.logout:hover {
+            background: #2a1a1a;
+            color: #e81123;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .update-log {
+                width: 240px;
+                min-width: 180px;
+            }
+
+            .main-actions {
+                padding: 30px 32px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+
+            .update-log {
+                width: 100%;
+                max-width: 100%;
+                min-width: 0;
+                max-height: 280px;
+                min-height: 200px;
+                border-right: none;
+                border-bottom: 1px solid var(--border-color);
+                height: auto;
+                flex: 0 0 auto;
+            }
+
+            .update-log-list {
+                padding: 4px 8px;
+                max-height: 200px;
+            }
+
+            .update-item {
+                padding: 6px 12px 6px 16px;
+            }
+
+            .main-actions {
+                padding: 24px 20px;
+                flex: 1;
+                min-height: 0;
+            }
+
+            .action-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+                margin-bottom: 24px;
+            }
+
+            .welcome-section .greeting {
+                font-size: 22px;
+            }
+
+            .welcome-section {
+                margin-bottom: 24px;
+            }
+
+            .recent-item {
+                padding: 12px 16px;
+            }
+
+            .action-card {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .top-left .menu-item {
+                display: none;
+            }
+
+            .update-log {
+                max-height: 220px;
+                min-height: 150px;
+            }
+
+            .update-log-list {
+                max-height: 150px;
+            }
+
+            .recent-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 6px;
+            }
+
+            .recent-item .project-time {
+                align-self: flex-start;
+            }
+
+            .main-actions {
+                padding: 16px;
+            }
+
+            .action-card .icon {
+                font-size: 28px;
+            }
+
+            .action-card .action-title {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-window">
+    <!-- TOP BAR -->
+    <div class="top-bar">
+        <div class="top-left">
+            <div class="brand" onclick="window.location.href='/'">✦ Flux Studio</div>
+            <div class="menu-item active" onclick="window.location.href='/'">Home</div>
+            <div class="menu-item" onclick="window.location.href='/create'">New Project</div>
+            <div class="menu-item" onclick="window.location.href='/load'">Load Project</div>
+            <div class="menu-item" onclick="window.location.href='/editor'">Editor</div>
+            <div class="menu-item" onclick="window.location.href='/admin'">Admin</div>
+            
+            <div class="search-bar">
+                <span>🔍</span>
+                <input type="text" placeholder="Global Search..." id="globalSearch">
+                <span class="search-shortcut">⌘P</span>
+            </div>
+
+            <div class="menu-item">Help</div>
+        </div>
+        
+        <div class="top-right">
+            <!-- 👤 USER MENU -->
+            <div class="user-menu" id="userMenu">
+                <span class="username" id="usernameDisplay">Guest</span>
+                <div class="avatar-btn" id="avatarBtn" onclick="toggleDropdown()">
+                    <span class="avatar-icon">👤</span>
+                    <span class="dropdown-arrow">▾</span>
+                </div>
+                
+                <!-- DROPDOWN -->
+                <div class="dropdown-menu" id="dropdownMenu">
+                    <div class="dropdown-item" onclick="window.location.href='/settings'">
+                        <span class="icon">⚙️</span>
+                        Settings
+                    </div>
+                    <div class="dropdown-item" onclick="window.location.href='/tokens'">
+                        <span class="icon">🔑</span>
+                        Tokens
+                        <span class="badge" id="tokenCount">0</span>
+                    </div>
+                    <div class="dropdown-divider"></div>
+                    <div class="dropdown-item logout" onclick="logout()">
+                        <span class="icon">🚪</span>
+                        Log Out
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PROGRESS BAR -->
+    <div class="progress-bar" id="progressBar">
+        <div class="progress-fill" id="progressFill"></div>
+        <span class="progress-label" id="progressLabel">
+            <span class="progress-dot idle" id="progressDot"></span>
+            <span id="progressText">● Ready</span>
+            <span class="progress-spinner" id="progressSpinner"></span>
+        </span>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+        <!-- LEFT: Update Log -->
+        <div class="update-log">
+            <div class="update-log-header">
+                <div class="title">
+                    📰 UPDATE LOG
+                    <span class="version" id="appVersion">v0.1.0</span>
+                </div>
+                <div class="actions">
+                    <span title="Refresh" id="refreshLogBtn">🔄</span>
+                    <span title="Filter">🔍</span>
+                </div>
+            </div>
+            <div class="update-log-list" id="updateLogList">
+                <!-- ПОЛНОСТЬЮ ПУСТО -->
+            </div>
+        </div>
+
+        <!-- RIGHT: Main Actions -->
+        <div class="main-actions">
+            <div class="welcome-section">
+                <div class="greeting">
+                    👋 Welcome back, <span id="userName">Developer</span>
+                </div>
+                <div class="sub">Ready to build something amazing?</div>
+            </div>
+
+            <div class="action-grid">
+                <div class="action-card" onclick="window.location.href='/create'">
+                    <span class="icon">✦</span>
+                    <div class="action-title">Create Project</div>
+                    <div class="action-desc">Start a new project from scratch</div>
+                    <span class="action-shortcut">⌘N</span>
+                </div>
+                <div class="action-card" onclick="window.location.href='/load'">
+                    <span class="icon">📂</span>
+                    <div class="action-title">Load Project</div>
+                    <div class="action-desc">Open an existing project</div>
+                    <span class="action-shortcut">⌘O</span>
+                </div>
+                <div class="action-card" onclick="window.location.href='/admin'">
+                    <span class="icon">⚙️</span>
+                    <div class="action-title">Admin Panel</div>
+                    <div class="action-desc">Manage your projects and team</div>
+                    <span class="action-shortcut">⌘A</span>
+                </div>
+                <div class="action-card" onclick="window.location.href='/editor'">
+                    <span class="icon">🎨</span>
+                    <div class="action-title">Open Editor</div>
+                    <div class="action-desc">Continue working on your project</div>
+                    <span class="action-shortcut">⌘E</span>
+                </div>
+            </div>
+
+            <div class="recent-projects-section">
+                <div class="recent-header">
+                    <div class="title">📁 Recent Projects</div>
+                    <div class="see-all" onclick="window.location.href='/load'">See All →</div>
+                </div>
+                <div class="recent-list" id="recentProjects">
+                    <!-- ПОЛНОСТЬЮ ПУСТО -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast">
+        <div class="toast-title" id="toastTitle">Success!</div>
+        <div class="toast-message" id="toastMessage">Action completed successfully.</div>
+    </div>
+</div>
+
+<script>
+    // ============================================================
+    //  HOME PAGE - С РАБОЧИМ ПРОГРЕСС-БАРОМ
+    // ============================================================
+
+    // --- PROGRESS BAR STATE ---
+    let currentStatus = 'idle';
+    let currentProgress = 0;
+
+    function updateProgress(status, percent, text) {
+        const bar = document.getElementById('progressBar');
+        const fill = document.getElementById('progressFill');
+        const dot = document.getElementById('progressDot');
+        const label = document.getElementById('progressText');
+        const spinner = document.getElementById('progressSpinner');
+
+        // Обновляем статус
+        bar.className = 'progress-bar';
+        if (status === 'loading') {
+            bar.classList.add('loading');
+        }
+
+        // Обновляем точку
+        dot.className = 'progress-dot ' + status;
+
+        // Обновляем заполнение
+        fill.style.width = Math.min(percent, 100) + '%';
+
+        // Обновляем текст
+        label.textContent = text || (status === 'idle' ? '● Ready' : 
+                                     status === 'loading' ? `⏳ ${percent}%` :
+                                     status === 'success' ? '✅ Complete' :
+                                     status === 'error' ? '❌ Error' : '● Ready');
+    }
+
+    // --- API STATUS ---
+    async function checkStatus() {
+        try {
+            const response = await fetch('/api/status');
+            const data = await response.json();
+            
+            updateProgress(data.status, data.progress || 0, data.message || '');
+            currentStatus = data.status;
+            currentProgress = data.progress || 0;
+            
+            return data;
+        } catch (e) {
+            updateProgress('idle', 0, '● Offline');
+            return { status: 'idle', progress: 0 };
+        }
+    }
+
+    // --- API CALLS ---
+    const API = {
+        async getUpdates() {
+            console.log('📡 Fetching updates...');
+            try {
+                const response = await fetch('/api/updates');
+                return await response.json();
+            } catch {
+                return [];
+            }
+        },
+        async getRecentProjects() {
+            console.log('📡 Fetching recent projects...');
+            try {
+                const response = await fetch('/api/projects/recent');
+                return await response.json();
+            } catch {
+                return [];
+            }
+        },
+        async getUserInfo() {
+            console.log('📡 Fetching user info...');
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) return { name: 'Guest' };
+                const response = await fetch('/api/auth/me', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                return data.user || { name: 'Guest' };
+            } catch {
+                return { name: 'Guest' };
+            }
+        },
+        async getAppVersion() {
+            console.log('📡 Fetching app version...');
+            try {
+                const response = await fetch('/api/version');
+                return await response.json();
+            } catch {
+                return { version: 'v0.1.0' };
+            }
+        }
+    };
+
+    // --- RENDER FUNCTIONS ---
+    function renderUpdateLog(updates) {
+        const container = document.getElementById('updateLogList');
+        container.innerHTML = '';
+        if (!updates || updates.length === 0) {
+            container.innerHTML = '<div style="color:#555;padding:20px;text-align:center;">No updates available</div>';
+            return;
+        }
+        updates.forEach(update => {
+            const item = document.createElement('div');
+            item.className = `update-item ${update.type || 'update'}`;
+            item.innerHTML = `
+                <div class="update-date">${update.date || ''}</div>
+                <div class="update-title">${update.title || ''}</div>
+                <div class="update-desc">${update.desc || ''}</div>
+                <span class="update-tag ${update.type || 'update'}">${update.tag || 'Update'}</span>
+            `;
+            container.appendChild(item);
+        });
+    }
+
+    function renderRecentProjects(projects) {
+        const container = document.getElementById('recentProjects');
+        container.innerHTML = '';
+        if (!projects || projects.length === 0) {
+            container.innerHTML = `
+                <div class="empty-recent">
+                    <span class="emoji">📭</span>
+                    <div class="title">No recent projects</div>
+                    <div class="desc">Create your first project to get started</div>
+                </div>
+            `;
+            return;
+        }
+        projects.forEach(project => {
+            const item = document.createElement('div');
+            item.className = 'recent-item';
+            item.onclick = () => window.location.href = `/project/${project.id}`;
+            item.innerHTML = `
+                <div class="project-info">
+                    <span class="emoji">${project.emoji || '📄'}</span>
+                    <div>
+                        <div class="name">${project.name || 'Unnamed'}</div>
+                        <div class="meta">
+                            <span>${project.type || 'Project'}</span>
+                            <span>•</span>
+                            <span>${project.lastModified ? new Date(project.lastModified).toLocaleDateString() : ''}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="project-time">${project.lastModified ? getTimeAgo(project.lastModified) : ''}</div>
+            `;
+            container.appendChild(item);
+        });
+    }
+
+    function getTimeAgo(dateString) {
+        const date = new Date(dateString);
+        const now = new Date();
+        const diff = now - date;
+        if (diff < 3600000) return 'Just now';
+        if (diff < 86400000) return `${Math.floor(diff / 3600000)}h ago`;
+        if (diff < 604800000) return `${Math.floor(diff / 86400000)}d ago`;
+        return date.toLocaleDateString();
+    }
+
+    function renderUserInfo(user) {
+        const nameEl = document.getElementById('userName');
+        const usernameEl = document.getElementById('usernameDisplay');
+        if (nameEl) nameEl.textContent = user.name || 'Developer';
+        if (usernameEl) usernameEl.textContent = user.name || 'Guest';
+    }
+
+    function renderAppVersion(version) {
+        const el = document.getElementById('appVersion');
+        if (el) el.textContent = version.version || 'v0.1.0';
+    }
+
+    // --- UPDATE LOOP ---
+    async function updateLoop() {
+        console.log('🔄 Update loop started');
+        updateProgress('loading', 30, '⏳ Loading data...');
+        
+        try {
+            // Загружаем обновления
+            const updates = await API.getUpdates();
+            renderUpdateLog(updates);
+            updateProgress('loading', 50, '⏳ Loading projects...');
+            
+            // Загружаем проекты
+            const projects = await API.getRecentProjects();
+            renderRecentProjects(projects);
+            updateProgress('loading', 70, '⏳ Loading user info...');
+            
+            // Загружаем пользователя
+            const user = await API.getUserInfo();
+            renderUserInfo(user);
+            updateProgress('loading', 85, '⏳ Loading version...');
+            
+            // Загружаем версию
+            const version = await API.getAppVersion();
+            renderAppVersion(version);
+            
+            // Загружаем токены
+            await loadTokenCount();
+            
+            updateProgress('success', 100, '✅ Ready');
+            setTimeout(() => {
+                updateProgress('idle', 0, '● Ready');
+            }, 1500);
+            
+        } catch (error) {
+            console.error('❌ Update loop error:', error);
+            updateProgress('error', 0, '❌ Error loading data');
+            setTimeout(() => {
+                updateProgress('idle', 0, '● Ready');
+            }, 2000);
+        }
+    }
+
+    // --- TOAST ---
+    function showToast(title, message, type = 'success') {
+        const toast = document.getElementById('toast');
+        const toastTitle = document.getElementById('toastTitle');
+        const toastMessage = document.getElementById('toastMessage');
+        toast.className = 'toast ' + type;
+        toastTitle.textContent = title;
+        toastMessage.textContent = message;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 4000);
+    }
+
+    // --- USER DROPDOWN ---
+    function toggleDropdown() {
+        const menu = document.getElementById('dropdownMenu');
+        const arrow = document.querySelector('.dropdown-arrow');
+        menu.classList.toggle('open');
+        arrow.classList.toggle('open');
+    }
+
+    document.addEventListener('click', function(e) {
+        const userMenu = document.getElementById('userMenu');
+        if (!userMenu.contains(e.target)) {
+            document.getElementById('dropdownMenu').classList.remove('open');
+            const arrow = document.querySelector('.dropdown-arrow');
+            if (arrow) arrow.classList.remove('open');
+        }
+    });
+
+    // --- LOGOUT ---
+    async function logout() {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            window.location.href = '/login';
+            return;
+        }
+        
+        try {
+            await fetch('/api/auth/logout', {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+        } catch (e) {}
+        
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = '/login';
+    }
+
+    // --- LOAD TOKEN COUNT ---
+    async function loadTokenCount() {
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                document.getElementById('tokenCount').textContent = '0';
+                return;
+            }
+            const response = await fetch('/api/auth/tokens', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await response.json();
+            document.getElementById('tokenCount').textContent = data.count || 0;
+        } catch (e) {
+            document.getElementById('tokenCount').textContent = '0';
+        }
+    }
+
+    // --- LOAD USER INFO ---
+    async function loadUserInfo() {
+        const userData = localStorage.getItem('user');
+        if (userData) {
+            try {
+                const user = JSON.parse(userData);
+                const usernameEl = document.getElementById('usernameDisplay');
+                if (usernameEl) usernameEl.textContent = user.username || 'Guest';
+            } catch (e) {}
+        }
+        await loadTokenCount();
+    }
+
+    // --- EVENTS ---
+    document.getElementById('refreshLogBtn').addEventListener('click', () => {
+        updateLoop();
+        showToast('🔄', 'Refreshing data...', 'success');
+    });
+
+    // --- KEYBOARD SHORTCUTS ---
+    document.addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
+            e.preventDefault();
+            window.location.href = '/create';
+        }
+        if ((e.ctrlKey || e.metaKey) && e.key === 'o') {
+            e.preventDefault();
+            window.location.href = '/load';
+        }
+        if ((e.ctrlKey || e.metaKey) && e.key === 'a') {
+            e.preventDefault();
+            window.location.href = '/admin';
+        }
+        if ((e.ctrlKey || e.metaKey) && e.key === 'e') {
+            e.preventDefault();
+            window.location.href = '/editor';
+        }
+        if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
+            e.preventDefault();
+            document.getElementById('globalSearch')?.focus();
+        }
+    });
+
+    // --- INIT ---
+    document.addEventListener('DOMContentLoaded', function() {
+        loadUserInfo();
+        updateLoop();
+        setInterval(updateLoop, 60000); // Обновление каждую минуту
+        setInterval(checkStatus, 5000); // Проверка статуса каждые 5 секунд
+    });
+
+    console.log('🏠 Flux Studio - Home');
+    console.log('📡 Data loaded from server via API');
+    console.log('💡 Press Ctrl+P for global search');
+    console.log('⏳ Progress bar shows real server status');
+</script>
+
+</body>
+</html>

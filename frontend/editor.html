@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flux Studio - Editor</title>
+    
+    <!-- Fabric.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
+    
+    <!-- Styles - абсолютные пути -->
+    <link rel="stylesheet" href="/styles/editor.css">
+</head>
+<body>
+
+<div class="app-window">
+    <!-- TOP BAR -->
+    <div class="top-bar">
+        <div class="top-left">
+            <div class="brand" onclick="window.location.href='/'">✦ Flux Studio</div>
+            <div class="menu-item" onclick="window.location.href='/'">Home</div>
+            <div class="menu-item" onclick="window.location.href='/create'">New Project</div>
+            <div class="menu-item" onclick="window.location.href='/load'">Load Project</div>
+            <div class="menu-item active" onclick="window.location.href='/editor'">Editor</div>
+            <div class="menu-item" onclick="window.location.href='/admin'">Admin</div>
+            
+            <div class="search-bar">
+                <span>🔍</span>
+                <input type="text" placeholder="Global Search..." id="globalSearch">
+                <span class="search-shortcut">⌘P</span>
+            </div>
+
+            <div class="menu-item">Help</div>
+        </div>
+        <div class="top-right">
+            <span class="icon-btn" onclick="window.location.href='/'">🏠</span>
+            <span class="icon-btn" onclick="window.location.href='/admin'">⚙️</span>
+            <div class="window-controls">
+                <span class="red" onclick="window.close()"></span>
+                <span class="yellow"></span>
+                <span class="green"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- PROGRESS BAR -->
+    <div class="progress-bar" id="progressBar">
+        <div class="progress-fill" id="progressFill"></div>
+        <span class="progress-label" id="progressLabel">● Loading...</span>
+    </div>
+
+    <!-- MAIN BODY -->
+    <div class="main-body">
+        
+        <!-- LEFT PANEL: Explorer -->
+        <div class="sidebar-left">
+            <div class="sidebar-header">
+                Explorer
+                <div class="actions">
+                    <span title="New Page" id="newPageBtn">📄</span>
+                    <span title="Refresh" id="refreshExplorerBtn">🔄</span>
+                </div>
+            </div>
+            
+            <div class="explorer-search">
+                <span>🔍</span>
+                <input type="text" id="explorerSearchInput" placeholder="Search files...">
+                <span class="clear-btn" id="explorerSearchClear">✕</span>
+            </div>
+            
+            <div class="explorer-list" id="explorerList"></div>
+        </div>
+
+        <!-- CENTER: Canvas -->
+        <div class="center-area">
+            <div class="editor-tabs" id="editorTabs"></div>
+            
+            <div class="canvas-viewport" id="viewport">
+                <div class="canvas-wrapper" id="canvasWrapper">
+                    <div class="page-container">
+                        <canvas id="canvas"></canvas>
+                    </div>
+                </div>
+                
+                <div class="canvas-controls">
+                    <button id="zoomOutBtn" title="Zoom Out">−</button>
+                    <span class="zoom-level" id="zoomLevel">100%</span>
+                    <button id="zoomInBtn" title="Zoom In">+</button>
+                    <button id="resetViewBtn" title="Reset View">⊡</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT PANEL: Palette + Properties -->
+        <div class="sidebar-right">
+            <div class="panel-box">
+                <h3>
+                    Element Palette
+                    <span class="hint" id="refreshPaletteBtn">⊕</span>
+                </h3>
+                
+                <div class="palette-search">
+                    <span>🔍</span>
+                    <input type="text" id="paletteSearchInput" placeholder="Search elements...">
+                    <span class="clear-btn" id="paletteSearchClear">✕</span>
+                </div>
+                
+                <div class="palette-items" id="paletteItems"></div>
+            </div>
+            
+            <div class="panel-box">
+                <h3>
+                    Property Editor
+                    <span class="hint">⚡</span>
+                </h3>
+                
+                <div class="properties-search">
+                    <span>🔍</span>
+                    <input type="text" id="propertiesSearchInput" placeholder="Search properties...">
+                    <span class="clear-btn" id="propertiesSearchClear">✕</span>
+                </div>
+                
+                <div class="prop-rows" id="propertyRows"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BOTTOM: Terminal -->
+    <div class="terminal-container">
+        <div class="terminal-tabs">
+            <div class="terminal-tab active">⚡ Terminal</div>
+            <div class="terminal-tab">📋 Output</div>
+            <div class="terminal-tab">🐛 Debug</div>
+        </div>
+        <div class="terminal-output" id="terminalOutput"></div>
+    </div>
+
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">
+    <div class="toast-title" id="toastTitle">Success!</div>
+    <div class="toast-message" id="toastMessage">Action completed successfully.</div>
+</div>
+
+<!-- Script - абсолютный путь -->
+<script src="/scripts/editor.js"></script>
+
+<!-- Project ID будет вставлен из бэкенда -->
+</body>
+</html>

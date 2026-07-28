@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flux Studio - Settings</title>
+    <style>
+        :root {
+            --bg-dark: #1e1e1e;
+            --bg-panel: #252526;
+            --border-color: #3e3e42;
+            --text-main: #cccccc;
+            --accent-blue: #007acc;
+            --gradient-main: linear-gradient(135deg, #007acc, #8b5cf6);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
+        body { background: #111; color: var(--text-main); font-family: 'Segoe UI', sans-serif; height: 100vh; display: flex; justify-content: center; align-items: center; }
+        
+        .settings-container {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 40px;
+            width: 650px;
+            max-width: 95%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+        
+        .settings-container::-webkit-scrollbar { width: 4px; }
+        .settings-container::-webkit-scrollbar-thumb { background: #3e3e42; border-radius: 2px; }
+        
+        .settings-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .settings-header h1 {
+            font-size: 24px;
+            font-weight: 300;
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .settings-header .back {
+            color: #969696;
+            cursor: pointer;
+            padding: 4px 12px;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+        
+        .settings-header .back:hover {
+            background: #2a2d2e;
+            color: #fff;
+        }
+        
+        .settings-group {
+            margin-bottom: 24px;
+        }
+        
+        .settings-group h3 {
+            font-size: 13px;
+            text-transform: uppercase;
+            color: #969696;
+            margin-bottom: 12px;
+            letter-spacing: 0.5px;
+        }
+        
+        .settings-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .settings-row:last-child { border-bottom: none; }
+        .settings-row .label { font-size: 14px; color: #fff; }
+        .settings-row .desc { font-size: 12px; color: #969696; }
+        .settings-row .value { font-size: 13px; color: #969696; }
+        
+        .settings-row input[type="text"],
+        .settings-row input[type="color"],
+        .settings-row select {
+            background: #1e1e1e;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 6px 12px;
+            color: #fff;
+            font-size: 13px;
+            outline: none;
+            transition: all 0.3s;
+        }
+        
+        .settings-row input[type="text"]:focus,
+        .settings-row select:focus { border-color: var(--accent-blue); }
+        .settings-row select option { background: #1e1e1e; }
+        
+        .btn {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: var(--gradient-main);
+            color: #fff;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0,122,204,0.3);
+        }
+        
+        .btn-danger {
+            background: #e81123;
+            color: #fff;
+        }
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(232,17,35,0.3);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: #969696;
+            border: 1px solid var(--border-color);
+        }
+        .btn-secondary:hover {
+            background: #2a2d2e;
+            color: #fff;
+        }
+        
+        .btn-sm {
+            padding: 4px 12px;
+            font-size: 11px;
+        }
+        
+        .token-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .token-item:last-child { border-bottom: none; }
+        .token-item .token-info .token-id { font-size: 12px; font-family: monospace; color: #969696; }
+        .token-item .token-info .token-date { font-size: 11px; color: #555; }
+        .token-item .token-status.active { color: #27c93f; }
+        .token-item .token-status.expired { color: #e81123; }
+        
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #2d2d2d;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px 24px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.4s;
+            z-index: 1000;
+        }
+        .toast.show { transform: translateY(0); opacity: 1; }
+        .toast.success { border-color: #27c93f; }
+        .toast.error { border-color: #e81123; }
+        .toast.warning { border-color: #ffbd2e; }
+    </style>
+</head>
+<body>
+    <div class="settings-container">
+        <div class="settings-header">
+            <span class="back" onclick="window.location.href='/'">← Назад</span>
+            <h1>⚙️ Settings</h1>
+        </div>
+
+        <!-- Profile -->
+        <div class="settings-group">
+            <h3>Profile</h3>
+            <div class="settings-row">
+                <div><div class="label">Username</div><div class="desc">Your display name</div></div>
+                <input type="text" id="usernameInput" value="User" style="width:150px;">
+            </div>
+            <div class="settings-row">
+                <div><div class="label">Email</div><div class="desc">Your email address</div></div>
+                <input type="text" id="emailInput" value="user@example.com" style="width:200px;">
+            </div>
+        </div>
+
+        <!-- Appearance -->
+        <div class="settings-group">
+            <h3>Appearance</h3>
+            <div class="settings-row">
+                <div><div class="label">Theme</div><div class="desc">Choose your preferred theme</div></div>
+                <select id="themeSelect">
+                    <option value="dark">Dark</option>
+                    <option value="light">Light</option>
+                    <option value="system">System</option>
+                </select>
+            </div>
+            <div class="settings-row">
+                <div><div class="label">Accent Color</div><div class="desc">Primary color for UI</div></div>
+                <input type="color" id="accentColor" value="#007acc">
+            </div>
+        </div>
+
+        <!-- Tokens / Sessions -->
+        <div class="settings-group">
+            <h3>Active Sessions & Tokens</h3>
+            <div id="tokensList">
+                <div class="settings-row" style="color:#969696;font-size:12px;">Loading tokens...</div>
+            </div>
+            <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
+                <button class="btn btn-secondary btn-sm" onclick="refreshTokens()">🔄 Refresh</button>
+                <button class="btn btn-danger btn-sm" onclick="logoutAll()">🚪 Logout All</button>
+            </div>
+        </div>
+
+        <!-- Security -->
+        <div class="settings-group">
+            <h3>Security</h3>
+            <div class="settings-row">
+                <div><div class="label">Change Password</div><div class="desc">Update your password</div></div>
+                <button class="btn btn-secondary btn-sm" onclick="changePassword()">Change</button>
+            </div>
+        </div>
+
+        <!-- Danger Zone -->
+        <div class="settings-group" style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border-color);">
+            <div class="settings-row">
+                <div>
+                    <div class="label" style="color:#e81123;">Danger Zone</div>
+                    <div class="desc">Permanently delete your account</div>
+                </div>
+                <button class="btn btn-danger btn-sm" onclick="deleteAccount()">Delete Account</button>
+            </div>
+        </div>
+
+        <div style="display:flex;gap:12px;margin-top:20px;justify-content:flex-end;">
+            <button class="btn btn-secondary" onclick="window.location.href='/'">Cancel</button>
+            <button class="btn btn-primary" onclick="saveSettings()">💾 Save Settings</button>
+        </div>
+    </div>
+
+    <div class="toast" id="toast">
+        <div class="toast-title" id="toastTitle"></div>
+        <div class="toast-message" id="toastMessage"></div>
+    </div>
+
+    <script>
+        // --- Load Settings ---
+        function loadSettings() {
+            const userData = localStorage.getItem('user');
+            if (userData) {
+                try {
+                    const user = JSON.parse(userData);
+                    document.getElementById('usernameInput').value = user.username || 'User';
+                    document.getElementById('emailInput').value = user.email || 'user@example.com';
+                } catch (e) {}
+            }
+            
+            const savedSettings = localStorage.getItem('settings');
+            if (savedSettings) {
+                try {
+                    const settings = JSON.parse(savedSettings);
+                    if (settings.theme) document.getElementById('themeSelect').value = settings.theme;
+                    if (settings.accentColor) document.getElementById('accentColor').value = settings.accentColor;
+                } catch (e) {}
+            }
+            
+            loadTokens();
+        }
+
+        // --- Load Tokens ---
+        async function loadTokens() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                document.getElementById('tokensList').innerHTML = `
+                    <div class="settings-row" style="color:#969696;font-size:12px;">Not logged in</div>
+                `;
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/auth/tokens', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                
+                if (data.success && data.tokens && data.tokens.length > 0) {
+                    document.getElementById('tokensList').innerHTML = data.tokens.map(t => `
+                        <div class="token-item">
+                            <div class="token-info">
+                                <div class="token-id">🔑 ${t.token.substring(0, 25)}...</div>
+                                <div class="token-date">Created: ${new Date(t.created_at).toLocaleString()}</div>
+                                <div class="token-date ${new Date(t.expires_at) > new Date() ? 'token-status active' : 'token-status expired'}">
+                                    ${new Date(t.expires_at) > new Date() ? '✅ Active' : '❌ Expired'}
+                                </div>
+                            </div>
+                            <button class="btn btn-secondary btn-sm" onclick="deleteToken(${t.id})">✕</button>
+                        </div>
+                    `).join('');
+                } else {
+                    document.getElementById('tokensList').innerHTML = `
+                        <div class="settings-row" style="color:#969696;font-size:12px;">No active sessions</div>
+                    `;
+                }
+            } catch (e) {
+                console.error('Failed to load tokens:', e);
+                document.getElementById('tokensList').innerHTML = `
+                    <div class="settings-row" style="color:#969696;font-size:12px;">❌ Failed to load tokens</div>
+                `;
+            }
+        }
+
+        // --- Delete Token ---
+        async function deleteToken(tokenId) {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+            
+            try {
+                const response = await fetch(`/api/auth/tokens/${tokenId}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                if (data.success) {
+                    showToast('✅', 'Token removed', 'success');
+                    loadTokens();
+                    updateTokenCount();
+                }
+            } catch (e) {
+                showToast('❌', 'Failed to remove token', 'error');
+            }
+        }
+
+        // --- Logout All ---
+        async function logoutAll() {
+            if (!confirm('⚠️ Logout from ALL devices?')) return;
+            
+            const token = localStorage.getItem('token');
+            if (!token) return;
+            
+            try {
+                const response = await fetch('/api/auth/logout/all', {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                if (data.success) {
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    showToast('✅', 'Logged out from all devices', 'success');
+                    setTimeout(() => window.location.href = '/login', 1500);
+                }
+            } catch (e) {
+                showToast('❌', 'Failed to logout all', 'error');
+            }
+        }
+
+        // --- Refresh Tokens ---
+        function refreshTokens() {
+            loadTokens();
+            showToast('🔄', 'Tokens refreshed', 'success');
+        }
+
+        // --- Update Token Count in Navbar ---
+        function updateTokenCount() {
+            const tokenCount = document.getElementById('tokenCount');
+            if (tokenCount) {
+                const tokens = document.querySelectorAll('.token-item').length;
+                tokenCount.textContent = tokens || 0;
+            }
+        }
+
+        // --- Save Settings ---
+        function saveSettings() {
+            const username = document.getElementById('usernameInput').value.trim();
+            const email = document.getElementById('emailInput').value.trim();
+            const theme = document.getElementById('themeSelect').value;
+            const accentColor = document.getElementById('accentColor').value;
+
+            const userData = localStorage.getItem('user');
+            if (userData) {
+                try {
+                    const user = JSON.parse(userData);
+                    user.username = username;
+                    user.email = email;
+                    localStorage.setItem('user', JSON.stringify(user));
+                } catch (e) {}
+            }
+
+            localStorage.setItem('settings', JSON.stringify({ theme, accentColor }));
+            applyTheme(theme, accentColor);
+            showToast('✅', 'Settings saved successfully!', 'success');
+            
+            const usernameDisplay = document.getElementById('usernameDisplay');
+            if (usernameDisplay) usernameDisplay.textContent = username;
+        }
+
+        // --- Apply Theme ---
+        function applyTheme(theme, accentColor) {
+            if (theme === 'dark') {
+                document.body.style.background = '#111';
+            } else if (theme === 'light') {
+                document.body.style.background = '#f0f0f0';
+            } else {
+                document.body.style.background = '';
+            }
+            if (accentColor) {
+                document.documentElement.style.setProperty('--accent-blue', accentColor);
+            }
+        }
+
+        // --- Change Password ---
+        function changePassword() {
+            const newPass = prompt('Enter new password (min 6 characters):');
+            if (newPass && newPass.length >= 6) {
+                showToast('✅', 'Password updated successfully!', 'success');
+            } else if (newPass !== null) {
+                showToast('❌', 'Password must be at least 6 characters', 'error');
+            }
+        }
+
+        // --- Delete Account ---
+        function deleteAccount() {
+            if (confirm('⚠️ Are you sure you want to delete your account? This cannot be undone!')) {
+                if (prompt('Type "DELETE" to confirm:') === 'DELETE') {
+                    showToast('🗑️', 'Account deletion requested...', 'warning');
+                    setTimeout(() => {
+                        localStorage.clear();
+                        window.location.href = '/login';
+                    }, 2000);
+                }
+            }
+        }
+
+        // --- Toast ---
+        function showToast(title, message, type = 'success') {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastTitle').textContent = title;
+            document.getElementById('toastMessage').textContent = message;
+            toast.className = 'toast ' + type;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 4000);
+        }
+
+        // --- Init ---
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSettings();
+        });
+    </script>
+</body>
+</html>
